@@ -10,13 +10,13 @@ import (
 
 // safeOpen is a function used to safely open a file for reading, this is to remain
 // safe while parsing special files, like those under /proc.
-func safeOpen(filen string) *os.File {
+func safeOpen(filen string) (*os.File, error) {
 	fptr, err := os.Open(filen)
 	if err != nil {
 		log.Fatalf("Unable to open file %s for reading, due to error %v", filen, err)
-		return nil
+		return nil, err
 	}
-	return fptr
+	return fptr, nil
 }
 
 // FileParser reads a specified input file, skipping n lines from the top of the file
@@ -28,7 +28,10 @@ func FileParser(head int, fileName string, nFields int, separator string) ([][]s
 
 	var inputFile io.Reader
 	if fileName != "" {
-		fptr := safeOpen(fileName)
+		fptr, err := safeOpen(fileName)
+		if err != nil {
+			return nil, err
+		}
 		defer fptr.Close()
 		inputFile = fptr
 	}
@@ -52,7 +55,7 @@ func FileParser(head int, fileName string, nFields int, separator string) ([][]s
 				break
 			}
 		}
-		temp := strings.Trim(buffer.Text(), "\r\n")
+		temp := strings.Trim(buffer.Text(), "\r\n\t   ")
 		parsed = append(parsed, strings.SplitN(temp, separator, nFields))
 	}
 
