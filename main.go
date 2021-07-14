@@ -9,10 +9,13 @@ import (
 	fp "github.com/thebsv/tcpmetrics/fparser"
 )
 
+// Token is a data structure to hold the output of fparser.
 type Token struct {
 	tokens [][]string
 }
 
+// TokenQueue is a queue which stores a copy of the tokens parsed
+// parsed by fparser, and keeps history over iterations of the control loop.
 type TokenQueue struct {
 	queue []Token
 }
