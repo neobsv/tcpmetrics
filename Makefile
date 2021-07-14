@@ -2,6 +2,7 @@ all: build test
 
 build:
 	go build -o tcpmetrics main.go
+	chmod 550 tcpmetrics
 
 test:
 	cd fparser ; go test -v ; cd ..
