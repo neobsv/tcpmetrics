@@ -131,12 +131,12 @@ func PortScanDetector(tokens [][]string) (map[string]string, error) {
 	result := make(map[string]string)
 
 	for i := 0; i < len(tokens); i += 1 {
-		srcIP, _, err := convertIPPort(tokens[i][1])
+		srcIP, srcPort, err := convertIPPort(tokens[i][1])
 		if err != nil {
 			log.Panicf("IP hex to int conversion failed, exiting %v", err)
 			return nil, err
 		}
-		dstIP, dstPort, err := convertIPPort(tokens[i][2])
+		dstIP, _, err := convertIPPort(tokens[i][2])
 		if err != nil {
 			log.Panicf("IP hex to int conversion failed, exiting %v", err)
 			return nil, err
@@ -145,21 +145,21 @@ func PortScanDetector(tokens [][]string) (map[string]string, error) {
 		if _, ok := check[temp]; ok {
 			// Check for similar srcIP, dstIP tuples, and make sure that the connections
 			// are hitting different ports, not the same port.
-			srcIPDPort := temp + dstPort
-			if _, ok := check_dport[srcIPDPort]; !ok && (result[temp] != dstPort) {
-				result[temp] += ", " + dstPort
+			srcIPDPort := temp + srcPort
+			if _, ok := check_dport[srcIPDPort]; !ok && (result[temp] != srcPort) {
+				result[temp] += ", " + srcPort
 			}
 			check_dport[srcIPDPort] = true
 		} else {
 			check[temp] = true
-			result[temp] = dstPort
+			result[temp] = srcPort
 		}
 	}
 
 	res := make(map[string]string)
-	for ips, dstPorts := range result {
-		if moreThanThreeElements(dstPorts) {
-			res[ips] = dstPorts
+	for ips, srcPorts := range result {
+		if moreThanThreeElements(srcPorts) {
+			res[ips] = srcPorts
 		}
 	}
 
