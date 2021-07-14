@@ -11,7 +11,7 @@ test:
 run:
 	go build -o tcpmetrics main.go
 	chmod 550 tcpmetrics
-	./tcpmetrics -filename=test1
+	./tcpmetrics -filename=/proc/net/tcp
 
 clean:
 	go clean
