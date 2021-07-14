@@ -17,6 +17,10 @@ func TestFileParserFunctional1(t *testing.T) {
 	assert.Equal(t, result[1][1], "0100007F:0277")
 }
 
-func TestFileParser2(t *testing.T) {
-
+func TestFileParserFunctional2(t *testing.T) {
+	_, err := FileParser(1, "bad", 6, " ")
+	if err != nil {
+		log.Printf("TestFileParserFunctional2 failed, which is good")
+		assert.True(t, true)
+	}
 }
