@@ -132,11 +132,13 @@ func PortScanDetector(tokens [][]string) (map[string]string, error) {
 		}
 		temp := srcIP + " -> " + dstIP
 		if _, ok := check[temp]; ok {
-			if _, ok := check_dport[dstPort]; !ok {
+			// Check for similar srcIP, dstIP tuples, and make sure that the connections
+			// are hitting different ports, not the same port.
+			srcIPDPort := temp + dstPort
+			if _, ok := check_dport[srcIPDPort]; !ok && (result[temp] != dstPort) {
 				result[temp] += ", " + dstPort
-			} else {
-				check_dport[dstPort] = true
 			}
+			check_dport[srcIPDPort] = true
 		} else {
 			check[temp] = true
 			result[temp] = dstPort

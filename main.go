@@ -19,13 +19,18 @@ func main() {
 		log.Fatalf("could not obtain connnection map")
 	}
 
-	for conn, _ := range cmap {
+	for conn := range cmap {
 		log.Printf("New Connection: %s", conn)
 	}
 
 	pmap, err := cs.PortScanDetector(tokens)
 	if err != nil {
 		log.Fatalf("could not perform port scan detection")
+	}
+
+	if len(pmap) == 0 {
+		log.Printf("No port scan detected")
+		return
 	}
 
 	for ips, dstPorts := range pmap {
