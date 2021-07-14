@@ -8,17 +8,6 @@ import (
 	"strings"
 )
 
-// safeOpen is a function used to safely open a file for reading, this is to remain
-// safe while parsing special files, like those under /proc.
-func safeOpen(filen string) (*os.File, error) {
-	fptr, err := os.Open(filen)
-	if err != nil {
-		log.Fatalf("Unable to open file %s for reading, due to error %v", filen, err)
-		return nil, err
-	}
-	return fptr, nil
-}
-
 // FileParser reads a specified input file, skipping n lines from the top of the file
 // specified by head. The nCols argument is used to split each row into the number of
 // columns specified to tokenize the row, and the separator is the string between two
@@ -28,8 +17,9 @@ func FileParser(head int, fileName string, nFields int, separator string) ([][]s
 
 	var inputFile io.Reader
 	if fileName != "" {
-		fptr, err := safeOpen(fileName)
+		fptr, err := os.Open(fileName)
 		if err != nil {
+			log.Fatalf("Unable to open file %s for reading, due to error %v", fileName, err)
 			return nil, err
 		}
 		defer fptr.Close()

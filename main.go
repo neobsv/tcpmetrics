@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"time"
@@ -37,9 +38,13 @@ func (q *TokenQueue) length() int {
 	return len(q.queue)
 }
 
-func controlLoop(qu TokenQueue) {
+func controlLoop(qu TokenQueue, filename string) {
 
-	tokens, err := fp.FileParser(1, "test1", 6, " ")
+	// Setting the constants
+	// 1 = number of lines from the top to be skipped
+	// 6 = number of fields in a row
+	// " " = the separator between each token in a row
+	tokens, err := fp.FileParser(1, filename, 6, " ")
 	if err != nil {
 		log.Fatalf("could not parse the file")
 	}
@@ -85,9 +90,13 @@ func controlLoop(qu TokenQueue) {
 
 func main() {
 
+	var filename string
+	flag.StringVar(&filename, "filename", "/proc/net/tcp", "The name of the file that needs to be parsed")
+	flag.Parse()
+
 	qu := TokenQueue{queue: make([]Token, 0)}
 	for {
-		controlLoop(qu)
+		controlLoop(qu, filename)
 		time.Sleep(time.Second * 10)
 	}
 }
