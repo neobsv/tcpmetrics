@@ -113,7 +113,7 @@ func ConnectionScanner(tokens [][]string) (map[string]bool, error) {
 // PortScanDetector goes through the tokens input and records entries which have
 // the same (srcIP, dstIP) tuples and varying dstPort s. Such entries are collected in
 // a list and output.
-func PortScanDetector(tokens [][]string) ([]string, error) {
+func PortScanDetector(tokens [][]string) (map[string]string, error) {
 
 	check := make(map[string]bool)
 	check_dport := make(map[string]bool)
@@ -143,10 +143,10 @@ func PortScanDetector(tokens [][]string) ([]string, error) {
 		}
 	}
 
-	res := make([]string, 0)
+	res := make(map[string]string)
 	for ips, dstPorts := range result {
 		if strings.Contains(dstPorts, ",") {
-			res = append(res, fmt.Sprintf("Port Scan detected: %s on ports %s", ips, dstPorts))
+			res[ips] = dstPorts
 		}
 	}
 
