@@ -110,6 +110,18 @@ func ConnectionScanner(tokens [][]string) (map[string]bool, error) {
 	return res, nil
 }
 
+// moreThanThreeElements is a helper function for PortScanDetector to detect a row
+// with more than three values.
+func moreThanThreeElements(s string) bool {
+	count := 1
+	for _, c := range s {
+		if c == ',' {
+			count += 1
+		}
+	}
+	return count >= 3
+}
+
 // PortScanDetector goes through the tokens input and records entries which have
 // the same (srcIP, dstIP) tuples and varying dstPort s. Such entries are collected in
 // a list and output.
@@ -147,7 +159,7 @@ func PortScanDetector(tokens [][]string) (map[string]string, error) {
 
 	res := make(map[string]string)
 	for ips, dstPorts := range result {
-		if strings.Contains(dstPorts, ",") {
+		if moreThanThreeElements(dstPorts) {
 			res[ips] = dstPorts
 		}
 	}

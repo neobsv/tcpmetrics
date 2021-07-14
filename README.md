@@ -19,3 +19,8 @@
 just using a string. Variable naming can be improved inside helper functions.
 
 - Numbers in the convertIP and convertPort function could be written as constants
+
+## To clarify
+
+- Define port scan, is it detection of similar tuple(srcIP, dstIP) with varying dstPort or are we looking for some patterns
+that the dstPorts exhibit
