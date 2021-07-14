@@ -106,7 +106,6 @@ func ConnectionScanner(tokens [][]string) (map[string]bool, error) {
 		res[temp] = true
 	}
 
-	log.Printf("logic to count / filter tokens after parsing")
 	return res, nil
 }
 

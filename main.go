@@ -1,12 +1,38 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
 	cs "github.com/thebsv/tcpmetrics/cscanner"
 	fp "github.com/thebsv/tcpmetrics/fparser"
 )
+
+type Token struct {
+	tokens [][]string
+}
+
+type TokenQueue struct {
+	queue []Token
+}
+
+func (q *TokenQueue) push(t Token) {
+	q.queue = append(q.queue, t)
+}
+
+func (q *TokenQueue) pop() (Token, error) {
+	if len(q.queue) > 0 {
+		ret := q.queue[0]
+		q.queue = q.queue[1:]
+		return ret, nil
+	}
+	return Token{tokens: make([][]string, 0)}, fmt.Errorf("queue is empty")
+}
+
+func (q *TokenQueue) length() int {
+	return len(q.queue)
+}
 
 func controlLoop(qu TokenQueue) {
 
@@ -38,7 +64,6 @@ func controlLoop(qu TokenQueue) {
 		aggTokens = append(aggTokens, token.tokens...)
 	}
 
-	// TODO: aggregate tokens from the queue before this function is called.
 	pmap, err := cs.PortScanDetector(aggTokens)
 	if err != nil {
 		log.Fatalf("could not perform port scan detection")
