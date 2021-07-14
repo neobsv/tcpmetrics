@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	log.Printf("main, input sanitization, control flow")
+
 	tokens, err := fp.FileParser(1, "test1", 6, " ")
 	if err != nil {
 		log.Fatalf("could not parse the file")

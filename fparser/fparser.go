@@ -42,7 +42,7 @@ func FileParser(head int, fileName string, nFields int, separator string) ([][]s
 		if !buffer.Scan() {
 			return nil, buffer.Err()
 		}
-		log.Printf("> skipping line : %s \n", buffer.Text())
+		// log.Printf("> skipping line : %s \n", buffer.Text())
 	}
 
 	// tokenize the file, row by row into a 2D array of strings
@@ -55,7 +55,7 @@ func FileParser(head int, fileName string, nFields int, separator string) ([][]s
 				break
 			}
 		}
-		temp := strings.Trim(buffer.Text(), "\r\n\t   ")
+		temp := strings.Trim(buffer.Text(), "\r\n\t ")
 		parsed = append(parsed, strings.SplitN(temp, separator, nFields))
 	}
 

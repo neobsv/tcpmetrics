@@ -14,7 +14,7 @@ func TestFileParserFunctional1(t *testing.T) {
 		assert.Fail(t, "TestFileParserFunctional1 failed")
 	}
 	// log.Printf("parsed output: %s %s %s %s %s", result, result[1][0], result[1][1], result[1][2], result[1][3])
-	assert.Contains(t, result[1][1], "0100007F:0277")
+	assert.Equal(t, result[1][1], "0100007F:0277")
 }
 
 func TestFileParser2(t *testing.T) {
