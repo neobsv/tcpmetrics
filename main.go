@@ -39,7 +39,6 @@ func (q *TokenQueue) length() int {
 }
 
 func controlLoop(qu TokenQueue, filename string) {
-
 	// Setting the constants
 	// 1 = number of lines from the top to be skipped
 	// 6 = number of fields in a row
@@ -94,9 +93,16 @@ func main() {
 	flag.StringVar(&filename, "filename", "/proc/net/tcp", "The name of the file that needs to be parsed")
 	flag.Parse()
 
+	itn := 0
 	qu := TokenQueue{queue: make([]Token, 0)}
 	for {
+		log.Printf("============================== Iteration Number %d ==============================", itn)
+		start := time.Now()
 		controlLoop(qu, filename)
+		timediff := time.Since(start)
+		log.Printf("============================== Elapsed Time %v =============================", timediff)
+		log.Printf("============================== End Iteration Number %d ==============================", itn)
 		time.Sleep(time.Second * 10)
+		itn++
 	}
 }
