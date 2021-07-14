@@ -122,21 +122,21 @@ func moreThanThreeElements(s string) bool {
 }
 
 // PortScanDetector goes through the tokens input and records entries which have
-// the same (srcIP, dstIP) tuples and varying srcPort s. Such entries are collected in
+// the same (srcIP, dstIP) tuples and varying dstPort s. Such entries are collected in
 // a list and output.
 func PortScanDetector(tokens [][]string) (map[string]string, error) {
 
 	check := make(map[string]bool)
-	check_sport := make(map[string]bool)
+	check_dport := make(map[string]bool)
 	result := make(map[string]string)
 
 	for i := 0; i < len(tokens); i += 1 {
-		srcIP, srcPort, err := convertIPPort(tokens[i][1])
+		srcIP, _, err := convertIPPort(tokens[i][1])
 		if err != nil {
 			log.Panicf("IP hex to int conversion failed, exiting %v", err)
 			return nil, err
 		}
-		dstIP, _, err := convertIPPort(tokens[i][2])
+		dstIP, dstPort, err := convertIPPort(tokens[i][2])
 		if err != nil {
 			log.Panicf("IP hex to int conversion failed, exiting %v", err)
 			return nil, err
@@ -144,22 +144,22 @@ func PortScanDetector(tokens [][]string) (map[string]string, error) {
 		temp := srcIP + " -> " + dstIP
 		if _, ok := check[temp]; ok {
 			// Check for similar srcIP, dstIP tuples, and make sure that the connections
-			// are hitting different ports, not the same port.
-			srcIPsrcPort := temp + srcPort
-			if _, ok := check_sport[srcIPsrcPort]; !ok && (result[temp] != srcPort) {
-				result[temp] += ", " + srcPort
+			// are hitting different dst ports.
+			srcIPdstPort := temp + dstPort
+			if _, ok := check_dport[srcIPdstPort]; !ok && (result[temp] != dstPort) {
+				result[temp] += ", " + dstPort
 			}
-			check_sport[srcIPsrcPort] = true
+			check_dport[srcIPdstPort] = true
 		} else {
 			check[temp] = true
-			result[temp] = srcPort
+			result[temp] = dstPort
 		}
 	}
 
 	res := make(map[string]string)
-	for ips, srcPorts := range result {
-		if moreThanThreeElements(srcPorts) {
-			res[ips] = srcPorts
+	for ips, dstPorts := range result {
+		if moreThanThreeElements(dstPorts) {
+			res[ips] = dstPorts
 		}
 	}
 
