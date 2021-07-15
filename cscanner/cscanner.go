@@ -109,56 +109,78 @@ func ConnectionScanner(tokens [][]string) (map[string]bool, error) {
 	return res, nil
 }
 
-// moreThanThreeElements is a helper function for PortScanDetector to detect a row
-// with more than three values.
-func moreThanThreeElements(s string) bool {
-	count := 1
-	for _, c := range s {
-		if c == ',' {
-			count += 1
-		}
-	}
-	return count >= 3
-}
-
 // PortScanDetector goes through the tokens input and records entries which have
 // the same (srcIP, dstIP) tuples and varying dstPort s. Such entries are collected in
 // a list and output.
 func PortScanDetector(tokens [][]string) (map[string]string, error) {
 
-	check := make(map[string]bool)
-	check_dport := make(map[string]bool)
+	check_sport := make(map[string]map[string]bool)
 	result := make(map[string]string)
 
+	// Assuming
+	check_srcip := map[string]bool{"10.0.2.15": true, "0.0.0.0": true, "127.0.0.1": true}
+
 	for i := 0; i < len(tokens); i += 1 {
-		srcIP, _, err := convertIPPort(tokens[i][1])
+		srcIP, srcPort, err := convertIPPort(tokens[i][1])
 		if err != nil {
 			log.Panicf("IP hex to int conversion failed, exiting %v", err)
 			return nil, err
 		}
-		dstIP, dstPort, err := convertIPPort(tokens[i][2])
+		dstIP, _, err := convertIPPort(tokens[i][2])
 		if err != nil {
 			log.Panicf("IP hex to int conversion failed, exiting %v", err)
 			return nil, err
 		}
+
 		temp := srcIP + " -> " + dstIP
-		if _, ok := check[temp]; ok {
-			// Check for similar srcIP, dstIP tuples, and make sure that the connections
-			// are hitting different dst ports.
-			srcIPdstPort := temp + dstPort
-			if _, ok := check_dport[srcIPdstPort]; !ok && (result[temp] != dstPort) {
-				result[temp] += ", " + dstPort
+
+		// Look at the set of source ips which belong to set(0.0.0.0, 127.0.0.1, 10.0.2.15)
+		if _, ok := check_srcip[srcIP]; ok {
+
+			// Unique connections for CURRENT iteration
+			if setOfSeenSrcPort, ok := check_sport[temp]; ok {
+
+				// Unique source port was seen
+				if _, exist := setOfSeenSrcPort[srcPort]; !exist {
+					result[temp] += ", " + srcPort
+					setOfSeenSrcPort[srcPort] = true
+					check_sport[temp] = setOfSeenSrcPort
+				}
+
+				// If the src port for the connection exists in the set of seen source
+				// ports, then we ignore it, since it is a duplicate.
+			} else {
+
+				// This is the first time a connection srcIP -> dstIP was seen
+				result[temp] = srcPort
+
+				// Create a new source port set and add the detected source port to it
+				newSetSrcPort := make(map[string]bool)
+				newSetSrcPort[srcPort] = true
+				check_sport[temp] = newSetSrcPort
 			}
-			check_dport[srcIPdstPort] = true
-		} else {
-			check[temp] = true
-			result[temp] = dstPort
+			// End of unique connections for CURRENT iteration
+
 		}
+
+		// temp := srcIP + " -> " + dstIP
+		// if _, ok := check[temp]; ok {
+		// 	// Check for similar srcIP, dstIP tuples, and make sure that the connections
+		// 	// are hitting different dst ports.
+		// 	srcIPdstPort := temp + dstPort
+		// 	if _, ok := check_dport[srcIPdstPort]; !ok && (result[temp] != dstPort) {
+		// 		result[temp] += ", " + dstPort
+		// 	}
+		// 	check_dport[srcIPdstPort] = true
+		// } else {
+		// 	check[temp] = true
+		// 	result[temp] = dstPort
+		// }
 	}
 
 	res := make(map[string]string)
 	for ips, dstPorts := range result {
-		if moreThanThreeElements(dstPorts) {
+		if len(check_sport[ips]) >= 3 {
 			res[ips] = dstPorts
 		}
 	}
