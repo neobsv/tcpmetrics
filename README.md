@@ -50,7 +50,23 @@ Numbers in the convertIP and convertPort function could be written as constants.
 
 Yes, if the resolution of the connections / port scans are smaller than 10 seconds, then the program will miss the connections / port scan. It is really important to understand that time resolution / time windows matter. A continuous monitoring solution is not truly continuous, since it is still scheduled by the kernel to run at specific cpu time windows, along with the OS itself.
 
-4. If you weren't following these requirements, how would you solve the problem of logging every new connection? 
+4. If you weren't following these requirements, how would you solve the problem of logging every new connection?
+
+There are a couple of ways I know of to solve this problem
+
+a) Using Snort
+
+Although I haven't used it, I have observed people using the Network Intrusion Detection Tool Snort to monitor the network and log new connections according to specified altering rules, and the config could include `log tcp any any... ` something like that.
+
+`./snort -dev -l ./log 0.0.0.0 -c snort.conf`
+
+Then this data could be logged to a database.
+
+b) Configuring a router to send Netflow data
+
+I did research on this topic during undergrad, and we were able to configure a Cisco router to send flow data to a machine using UDP, and we were able to parse the packets using Perl automation running on a linux box (tap), and we logged this on the local filesystem. A suitable database could be used to do this at scale with many taps running over something like a large network.
+
+(source: https://www.researchgate.net/publication/258790178_Usage_of_Netflow_in_Security_and_Monitoring_of_Computer_Networks)
 
 Level 2
 1. Why did you choose `x` to write the build automation?
