@@ -48,20 +48,11 @@ func controlLoop(qu TokenQueue, filename string) {
 		log.Fatalf("could not parse the file")
 	}
 
-	cmap, err := cs.ConnectionScanner(tokens)
-	if err != nil {
-		log.Fatalf("could not obtain connnection map")
-	}
-
-	for conn := range cmap {
-		log.Printf("New Connection: %s", conn)
-	}
-
 	qu.push(Token{
 		tokens: tokens,
 	})
 
-	if qu.length() > 6 {
+	if qu.length() > 10 {
 		qu.pop()
 	}
 
@@ -69,6 +60,15 @@ func controlLoop(qu TokenQueue, filename string) {
 
 	for _, token := range qu.queue {
 		aggTokens = append(aggTokens, token.tokens...)
+	}
+
+	cmap, err := cs.ConnectionScanner(aggTokens)
+	if err != nil {
+		log.Fatalf("could not obtain connnection map")
+	}
+
+	for conn := range cmap {
+		log.Printf("New Connection: %s", conn)
 	}
 
 	pmap, err := cs.PortScanDetector(aggTokens)
@@ -94,6 +94,9 @@ func main() {
 	flag.Parse()
 
 	itn := 0
+	// Queue object to store tokens after parsing, to maintain a running history
+	// of connections, I'm limiting the queue length to 10, giving this a 100s time window
+	// and connections are said to be unique in this time window
 	qu := TokenQueue{queue: make([]Token, 0)}
 	for {
 		log.Printf("============================== Iteration Number %d ==============================", itn)

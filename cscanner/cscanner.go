@@ -163,19 +163,6 @@ func PortScanDetector(tokens [][]string) (map[string]string, error) {
 
 		}
 
-		// temp := srcIP + " -> " + dstIP
-		// if _, ok := check[temp]; ok {
-		// 	// Check for similar srcIP, dstIP tuples, and make sure that the connections
-		// 	// are hitting different dst ports.
-		// 	srcIPdstPort := temp + dstPort
-		// 	if _, ok := check_dport[srcIPdstPort]; !ok && (result[temp] != dstPort) {
-		// 		result[temp] += ", " + dstPort
-		// 	}
-		// 	check_dport[srcIPdstPort] = true
-		// } else {
-		// 	check[temp] = true
-		// 	result[temp] = dstPort
-		// }
 	}
 
 	res := make(map[string]string)
