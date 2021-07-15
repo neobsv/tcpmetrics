@@ -10,7 +10,7 @@ Port Scan Detection: A port scan is defined as an anomaly which occurs for conne
 
 The file /proc/net/tcp may be overwritten by the kernel while it is being read, so its best to not
 glob the entire file, and read it line by line instead. Reads to this file are atomic per line.
-(source: https://stackoverflow.com/questions/5713451/is-it-safe-to-parse-a-proc-file ). Therefore, I opened the file in read only mode and parsed it line by line using bufio. 
+[source](https://stackoverflow.com/questions/5713451/is-it-safe-to-parse-a-proc-file). Therefore, I opened the file in read only mode and parsed it line by line using bufio. 
 
 A file parser package was written to read the file and export the contents as a 2D array of strings, where
 each element is a field between blank spaces in the row, and each row is represented by a 1D array of strings.
@@ -52,9 +52,15 @@ Yes, if the resolution of the connections / port scans are smaller than 10 secon
 
 4. If you weren't following these requirements, how would you solve the problem of logging every new connection?
 
-There are a couple of ways I know of to solve this problem
+There are a few options to solve this problem, the best solution I found for this problem is to use Suricata
 
-a) Using Snort
+a) Suricata
+
+Read about this tool after I found that it is able to log flow information as well, and hence we wouldn't need to resort to another tool to perform deduplication. The rules to write flow keywords to capture only flow information can be found here [Flow Keywords](https://suricata.readthedocs.io/en/suricata-6.0.0/rules/flow-keywords.html). I haven't used this tool, however this seems to be the best solution for the question.
+
+Other possible solutions,
+
+b) Snort
 
 Although I haven't used it, I have observed people using the Network Intrusion Detection Tool Snort to monitor the network and log new connections according to specified altering rules, and the config could include `log tcp any any... `, and this could be configured to log only headers, and would need to be deduplicated.
 
@@ -62,11 +68,11 @@ Although I haven't used it, I have observed people using the Network Intrusion D
 
 Then this data could be logged to a database.
 
-b) Configuring a router to send Netflow data
+c) Configuring a router to send Netflow data
 
 I did research on this topic during undergrad, and I was able to configure a Cisco router running on GNS3 to send flow data to a machine using UDP, and parse the packets using Perl automation running on a linux box (tap), and logged on the local fs. A suitable database could be used to do this at scale with many taps running over something like a large network.
 
-(source: https://www.researchgate.net/publication/258790178_Usage_of_Netflow_in_Security_and_Monitoring_of_Computer_Networks)
+[source](https://www.researchgate.net/publication/258790178_Usage_of_Netflow_in_Security_and_Monitoring_of_Computer_Networks)
 
 Level 2
 1. Why did you choose `x` to write the build automation?
