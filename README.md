@@ -56,15 +56,15 @@ There are a couple of ways I know of to solve this problem
 
 a) Using Snort
 
-Although I haven't used it, I have observed people using the Network Intrusion Detection Tool Snort to monitor the network and log new connections according to specified altering rules, and the config could include `log tcp any any... ` something like that.
+Although I haven't used it, I have observed people using the Network Intrusion Detection Tool Snort to monitor the network and log new connections according to specified altering rules, and the config could include `log tcp any any... ` something like that, and this could be configured to log only headers, and this data would need to be deduplicated, how
 
-`./snort -dev -l ./log 0.0.0.0 -c snort.conf`
+`./snort -dv -l ./log 0.0.0.0 -c snort.conf`
 
 Then this data could be logged to a database.
 
 b) Configuring a router to send Netflow data
 
-I did research on this topic during undergrad, and we were able to configure a Cisco router to send flow data to a machine using UDP, and we were able to parse the packets using Perl automation running on a linux box (tap), and we logged this on the local filesystem. A suitable database could be used to do this at scale with many taps running over something like a large network.
+I did research on this topic during undergrad, and we were able to configure a Cisco router to send flow data to a machine using UDP, and parse the packets using Perl automation running on a linux box (tap), and logged on the local fs. A suitable database could be used to do this at scale with many taps running over something like a large network.
 
 (source: https://www.researchgate.net/publication/258790178_Usage_of_Netflow_in_Security_and_Monitoring_of_Computer_Networks)
 
