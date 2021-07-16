@@ -38,7 +38,7 @@ func (q *TokenQueue) length() int {
 	return len(q.queue)
 }
 
-func controlLoop(qu TokenQueue, filename string) {
+func controlLoop(qu TokenQueue, filename string, conn_history map[string]bool) {
 	// Setting the constants
 	// 1 = number of lines from the top to be skipped
 	// 6 = number of fields in a row
@@ -48,27 +48,41 @@ func controlLoop(qu TokenQueue, filename string) {
 		log.Fatalf("could not parse the file")
 	}
 
+	cmap, err := cs.ConnectionScanner(tokens)
+	if err != nil {
+		log.Fatalf("could not obtain connnection map")
+	}
+
+	for conn := range cmap {
+		// print connection only if it isnt in history
+		if _, exist := conn_history[conn]; !exist {
+			log.Printf("New Connection: %s", conn)
+		}
+	}
+
+	// Add the connections from the current iteration to history
+	for conn, _ := range cmap {
+		if _, exist := conn_history[conn]; !exist {
+			conn_history[conn] = true
+		}
+	}
+
 	qu.push(Token{
 		tokens: tokens,
 	})
 
+	// clear connection history
 	if qu.length() > 10 {
 		qu.pop()
+		for key := range conn_history {
+			delete(conn_history, key)
+		}
 	}
 
 	aggTokens := make([][]string, 0)
 
 	for _, token := range qu.queue {
 		aggTokens = append(aggTokens, token.tokens...)
-	}
-
-	cmap, err := cs.ConnectionScanner(aggTokens)
-	if err != nil {
-		log.Fatalf("could not obtain connnection map")
-	}
-
-	for conn := range cmap {
-		log.Printf("New Connection: %s", conn)
 	}
 
 	pmap, err := cs.PortScanDetector(aggTokens)
@@ -98,10 +112,11 @@ func main() {
 	// of connections, I'm limiting the queue length to 10, giving this a 100s time window
 	// and connections are said to be unique in this time window
 	qu := TokenQueue{queue: make([]Token, 0)}
+	conn_history := make(map[string]bool)
 	for {
 		log.Printf("============================== Iteration Number %d ==============================", itn)
 		start := time.Now()
-		controlLoop(qu, filename)
+		controlLoop(qu, filename, conn_history)
 		timediff := time.Since(start)
 		log.Printf("============================== Elapsed Time %v =============================", timediff)
 		log.Printf("============================== End Iteration Number %d ==============================", itn)

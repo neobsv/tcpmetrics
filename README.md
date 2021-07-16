@@ -2,7 +2,9 @@
 
 ## Problem Description
 
-New Connection Detection: The definition of new connection is a unique(srcIP:srcPort -> dstIP:dstPort), meaning if one of these four entities are varied, then it counts as a new connection. 
+New Connection Detection: 
+
+The definition of new connection is a unique(srcIP:srcPort -> dstIP:dstPort), meaning if one of these four entities are varied, then it counts as a new connection. 
 
 Port Scan Detection: 
 
