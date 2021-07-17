@@ -71,12 +71,8 @@ func controlLoop(qu TokenQueue, filename string, conn_history map[string]bool) {
 		tokens: tokens,
 	})
 
-	// clear connection history
 	if qu.length() > 10 {
 		qu.pop()
-		for key := range conn_history {
-			delete(conn_history, key)
-		}
 	}
 
 	aggTokens := make([][]string, 0)
@@ -118,6 +114,14 @@ func main() {
 		start := time.Now()
 		controlLoop(qu, filename, conn_history)
 		timediff := time.Since(start)
+
+		if (itn % 10) == 0 {
+			// clear connection history
+			for key := range conn_history {
+				delete(conn_history, key)
+			}
+		}
+
 		log.Printf("============================== Elapsed Time %v =============================", timediff)
 		log.Printf("============================== End Iteration Number %d ==============================", itn)
 		time.Sleep(time.Second * 10)
