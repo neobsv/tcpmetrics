@@ -110,7 +110,7 @@ func ConnectionScanner(tokens [][]string) (map[string]bool, error) {
 }
 
 // PortScanDetector goes through the tokens input and records entries which have
-// the same (srcIP, dstIP) tuples and varying dstPort s. Such entries are collected in
+// the same (srcIP, dstIP) tuples and varying srcPort s. Such entries are collected in
 // a list and output.
 func PortScanDetector(tokens [][]string) (map[string]string, error) {
 

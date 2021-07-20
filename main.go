@@ -61,7 +61,7 @@ func controlLoop(qu TokenQueue, filename string, conn_history map[string]bool) {
 	}
 
 	// Add the connections from the current iteration to history
-	for conn, _ := range cmap {
+	for conn := range cmap {
 		if _, exist := conn_history[conn]; !exist {
 			conn_history[conn] = true
 		}
@@ -115,7 +115,7 @@ func main() {
 		controlLoop(qu, filename, conn_history)
 		timediff := time.Since(start)
 
-		if (itn % 10) == 0 {
+		if (itn > 0) && ((itn % 10) == 0) {
 			// clear connection history
 			for key := range conn_history {
 				delete(conn_history, key)
