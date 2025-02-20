@@ -1,4 +1,4 @@
-name: Bencoder/Bdecoder
+name: tcpmetrics
 
 on:
   push:
