@@ -103,19 +103,19 @@ func main() {
 	flag.StringVar(&filename, "filename", "/proc/net/tcp", "The name of the file that needs to be parsed")
 	flag.Parse()
 
-	itn := 0
+	itn := 1
 	// Queue object to store tokens after parsing, to maintain a running history
 	// of connections, I'm limiting the queue length to 10, giving this a 100s time window
 	// and connections are said to be unique in this time window
 	qu := TokenQueue{queue: make([]Token, 0)}
 	conn_history := make(map[string]bool)
-	for {
+	for i:=0; i < itn; i+=1 {
 		log.Printf("============================== Iteration Number %d ==============================", itn)
 		start := time.Now()
 		controlLoop(qu, filename, conn_history)
 		timediff := time.Since(start)
 
-		if (itn > 0) && ((itn % 10) == 0) {
+		if (i > 0) && ((i % 10) == 0) {
 			// clear connection history
 			for key := range conn_history {
 				delete(conn_history, key)
@@ -123,8 +123,8 @@ func main() {
 		}
 
 		log.Printf("============================== Elapsed Time %v =============================", timediff)
-		log.Printf("============================== End Iteration Number %d ==============================", itn)
-		time.Sleep(time.Second * 10)
-		itn++
+		log.Printf("============================== End Iteration Number %d ==============================", i)
+		time.Sleep(time.Second * 1)
 	}
+
 }
