@@ -34,7 +34,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          version: ${{ matrix.version }}
+          go-version: ${{ matrix.version }}
 
       - name: Test the go module
         run: |
@@ -65,7 +65,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          version: ${{ matrix.version }}
+          go-version: ${{ matrix.version }}
 
       - name: Test the go module
         run: |
